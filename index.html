@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-a-s try</title>
+    <style>
+        :root {
+            --grid-rows: 1;
+            --grid-cols: 1;
+        }
+        div {
+            margin: 0px;
+            padding: 0px;
+            border: 0;
+        }
+        
+        #container {
+            display: grid;
+            width: 650px;
+            height: 650px;
+            grid-template-columns: repeat(var(--grid-cols), 1fr);
+            grid-template-rows: repeat(var(--grid-rows), 1fr);
+            gap: 1px;
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            background: orange;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+    <button id="resetbtn">Create Your Canvas</button>
+    <div id="container"></div>
+    
+    <script>
+        const resetBtn = document.querySelector('#resetbtn');
+        const container = document.querySelector('#container');
+
+        function makeCanvas(e) {
+            
+            cellsPerSide = prompt('Enter number of cells per side. Min: 3, Max: 100');
+
+            if (cellsPerSide === "" || cellsPerSide === null) {
+                return;
+            } else {
+                cellsPerSide = +cellsPerSide;
+            }
+
+            console.log(cellsPerSide);
+            
+            if (!(cellsPerSide >= 3 && cellsPerSide <= 100)) {
+                console.log("boo");
+                
+                makeCanvas(e); 
+            } else {
+                console.log("yay");
+
+                // Set CSS property values
+                container.style.setProperty('--grid-rows', cellsPerSide);
+                container.style.setProperty('--grid-cols', cellsPerSide);
+
+                // Delete previous canvas that has been created (if any)
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                // Dynamically generate a new n x n grid
+                for (let i = 1; i <= cellsPerSide * cellsPerSide; i++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'cell'
+                    cell.style.opacity = '0.1'
+                    container.appendChild(cell);
+
+                    // increase opacity by 10% on each mouse enter, until 100%
+                    cell.addEventListener('mouseenter', () => {                        
+                        if (!(parseFloat(cell.style.opacity) === 1.0)) {
+                            cell.style.opacity = parseFloat(cell.style.opacity) + 0.1;
+                            console.log(cell.style.opacity);
+                        }
+                    });
+                }
+
+                // Set random color of the canvas to be created
+                let hue = Math.floor(Math.random() * 361);           // 0 - 360 inclusive
+                let sat = Math.floor(Math.random() * 101);           // 0 - 100 inclusive
+                let lgt = Math.floor(Math.random() * 26) + 25;       // 25 - 50 inclusive
+                
+                let gridBgColor = `hsl(${hue}, ${sat}%, ${lgt}%)`;  // note there is no ; at the end of the literal. this caused me mad problems.
+
+                console.log('gridBgColor: ', gridBgColor);
+                
+                const cells = Array.from(document.querySelectorAll('.cell'));
+                
+                cells.forEach(item => {
+                    item.style.background = gridBgColor;
+                })
+            } 
+        }
+
+        resetBtn.addEventListener('click', makeCanvas);
+        
+    </script>
+        
+</body>
+</html>
